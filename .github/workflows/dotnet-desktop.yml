@@ -57,6 +57,7 @@ jobs:
 
     env:
       Solution_Name: Codeformer.sln                         # Replace with your solution name, i.e. MyWpfApp.sln.
+      Wap_Project_Path: codeformer-DotNetWrapper/wap
 
     steps:
     - name: Checkout
