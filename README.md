@@ -22,7 +22,7 @@
 3. **Clone or Download the Project:**
    - Clone the project repository using Git:
      ```
-     git clone [<repository-url>](https://github.com/Konohamaru04/codeformer-DotNetWrapper.git)
+     git clone https://github.com/Konohamaru04/codeformer-DotNetWrapper.git
      ```
    - Or download the project as a ZIP file and extract it to your desired location.
 
