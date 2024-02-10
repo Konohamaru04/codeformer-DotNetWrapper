@@ -12,11 +12,17 @@ def main(args):
     create_folder()
     parser = argparse.ArgumentParser(description="Run inference with codeformer.app")
     parser.add_argument("image", help="Path to the input image")
-    parser.add_argument("--background_enhance", action="store_true", help="Enhance background (default: False)", default=True)
-    parser.add_argument("--face_upsample", action="store_true", help="Upsample faces (default: False)", default=True)
+    parser.add_argument("--background_enhance", action="store_true", help="Enhance background (default: False)", default=False)
+    parser.add_argument("--face_upsample", action="store_true", help="Upsample faces (default: False)", default=False)
     parser.add_argument("--upscale", type=int, default=2, help="Upscale factor (default: 2)")
-    parser.add_argument("--codeformer_fidelity", type=int, default=1, help="Codeformer fidelity (default: 1)")
+    parser.add_argument("--codeformer_fidelity", type=float, default=0.5, help="Codeformer fidelity (default: 1)")
     args = parser.parse_args(args)
+
+    print('image: ' + str(args.image))
+    print('background_enhance: ' + str(args.background_enhance))
+    print('face_upsample: ' + str(args.face_upsample))
+    print('upscale: ' + str(args.upscale))
+    print('codeformer_fidelity: ' + str(args.codeformer_fidelity))
 
     if os.path.isfile(args.image):
         out = inference_app(
