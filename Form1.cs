@@ -157,6 +157,21 @@ namespace Codeformer
 
         }
 
+        private void LoadImage(Image image)
+        {
+            if (pictureBox1.InvokeRequired)
+            {
+                BeginInvoke(new Action(() =>
+                {
+                    pictureBox1.Image = new Bitmap(image);
+                }));
+            }
+            else
+            {
+                pictureBox1.Image = new Bitmap(image);
+            }
+        }
+
         private async void button1_Click(object sender, EventArgs e)
         {
             ShowLoading();
@@ -189,6 +204,7 @@ namespace Codeformer
 
                             }));
                             Bitmap frame = reader.ReadVideoFrame(value);
+                            LoadImage((Image)frame.Clone());
                             string frameName = GetFrameName(value);
                             string frameFileName = Path.Combine(inputImagePath, frameName);
                             frame.Save(frameFileName, System.Drawing.Imaging.ImageFormat.Png);
@@ -196,7 +212,7 @@ namespace Codeformer
                         }
 
                         // execute codeformer
-                        ApplyCodeFormer(GetInputImageWithIndex(value), GetOutputImageWithIndex(value));
+                        //ApplyCodeFormer(GetInputImageWithIndex(value), GetOutputImageWithIndex(value));
                         // Load images
                         LoadImage(value);
                         BeginInvoke(new Action(() =>
@@ -205,6 +221,7 @@ namespace Codeformer
                             trackBar1.Enabled = true;
                             trackBar1.Value = value;
                             //button1.Enabled = true;
+                            button9.Visible = true;
                         }));
 
                     });
@@ -434,7 +451,7 @@ namespace Codeformer
 
         private void button4_Click(object sender, EventArgs e)
         {
-            if (codeFormer)
+            if (codeFormer || isPlaying)
                 enhanced = !enhanced;
             else
                 enhanced = false;
@@ -603,7 +620,8 @@ namespace Codeformer
 
         private async Task EnhanceVideo()
         {
-
+            int start = 0;
+            start = trackBar1.Value;
             await Task.Run(async () =>
             {
                 try
@@ -613,9 +631,10 @@ namespace Codeformer
                     {
                         reader.Open(videoFilePath);
 
-                        for (int i = 0; i < reader.FrameCount; i++)
+                        for (int i = start; i < reader.FrameCount; i++)
                         {
                             Bitmap frame = reader.ReadVideoFrame(i);
+                            LoadImage((Image)frame.Clone());
                             string frameName = GetFrameName(i);
                             string frameFileName = Path.Combine(inputImagePath, frameName);
                             frame.Save(frameFileName, System.Drawing.Imaging.ImageFormat.Png);
@@ -643,7 +662,8 @@ namespace Codeformer
 
                         BeginInvoke(new Action(() =>
                         {
-                            timer1.Stop();
+                            timer1.Enabled = true;
+                            //timer1.Stop();
                             button2.BackColor = Color.Green;
                             button3.Enabled = true;
                             button4.Enabled = true;
@@ -694,6 +714,7 @@ namespace Codeformer
                                 //frameCount = Convert.ToInt32(reader.FrameCount);
 
                                 Bitmap frame = reader.ReadVideoFrame(value);
+                                LoadImage((Image)frame.Clone());
                                 string frameName = GetFrameName(value);
                                 string frameFileName = Path.Combine(inputImagePath, frameName);
                                 frame.Save(frameFileName, System.Drawing.Imaging.ImageFormat.Png);
@@ -872,6 +893,7 @@ namespace Codeformer
                                 //frameCount = Convert.ToInt32(reader.FrameCount);
 
                                 Bitmap frame = reader.ReadVideoFrame(value);
+                                LoadImage((Image)frame.Clone());
                                 string frameName = GetFrameName(value);
                                 string frameFileName = Path.Combine(inputImagePath, frameName);
                                 frame.Save(frameFileName, System.Drawing.Imaging.ImageFormat.Png);
@@ -945,6 +967,59 @@ namespace Codeformer
                 }));
             }
 
+        }
+
+        bool isPlaying = false;
+        private async void button9_Click(object sender, EventArgs e)
+        {
+            isPlaying = !isPlaying;
+
+            if (isPlaying)
+            {
+                button9.Text = "Pause";
+            }
+            else
+            {
+                button9.Text = "Play";
+            }
+            int start = 0;
+            start = trackBar1.Value;
+            if (isPlaying)
+            {
+                await Task.Run(() =>
+                {
+                    using (VideoFileReader reader = new VideoFileReader())
+                    {
+                        reader.Open(videoFilePath);
+                        
+                        //BeginInvoke(new Action(() =>
+                        //{
+                            
+                        //}));
+
+                        for (int i = start; i < reader.FrameCount; i++)
+                        {
+                            BeginInvoke(new Action(() =>
+                            {
+                                trackBar1.Value = i;
+                            }));
+                            if (!isPlaying) break;
+                            string frameName = GetFrameName(i);
+                            string frameFileName = Path.Combine(inputImagePath, frameName);
+                            if (!File.Exists(frameFileName))
+                            {
+                                Bitmap frame = reader.ReadVideoFrame(i);
+                                LoadImage((Image)frame.Clone());
+                                frame.Save(frameFileName, System.Drawing.Imaging.ImageFormat.Png);
+                                frame.Dispose();
+                            }
+                            dlog($"Playing: {frameFileName}");
+                            LoadOrgImage(GetInputImageWithIndex(i));
+                            LoadEnhImage(GetInputImageWithIndex(i));
+                        }
+                    }
+                });
+            }
         }
     }
 }
