@@ -15,9 +15,10 @@ jobs:
 
     - name: Download .NET Framework 4.8 Developer Pack
       run: |
+        $webClient = New-Object System.Net.WebClient
         $url = 'https://download.visualstudio.microsoft.com/download/pr/7e8e0667-d6ae-4c38-a2b7-96007232f95a/1e3cc06cb4fd07fbd5fb3b0fcd0c9fbf/ndp48-devpack-enu.exe'
         $output = 'dotnet_framework.exe'
-        Invoke-WebRequest -Uri $url -OutFile $output
+        $webClient.DownloadFile($url, $output)
         Start-Process -FilePath $output -ArgumentList '/q' -Wait
 
     - name: Setup .NET Framework 4.8
