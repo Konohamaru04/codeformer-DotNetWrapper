@@ -27,7 +27,7 @@ jobs:
 
     - name: Zip published files
       run: |
-        Compress-Archive -Path "${{ github.workspace }}/Codeformer/bin/Release/publish" -DestinationPath Codeformer/bin/Release/publish.zip -Force
+        Compress-Archive -Path "Codeformer/bin/Release/publish" -DestinationPath publish.zip -Force
 
 
     - name: Upload release asset
