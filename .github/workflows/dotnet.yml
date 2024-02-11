@@ -28,4 +28,25 @@ jobs:
       with:
         dotnet-version: 4.8.x
 
-    # Continue with the rest of your workflow steps...
+    - name: Restore Dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --configuration Release
+
+    - name: Test
+      run: dotnet test
+
+    - name: Publish Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v1.0.0  # specify your tag name
+        release_name: Release v1.0.0  # specify your release name
+        body: |
+          Release notes for v1.0.0:
+          - Describe your changes here
+        draft: false
+        prerelease: false
