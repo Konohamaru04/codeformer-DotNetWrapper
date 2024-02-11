@@ -25,18 +25,13 @@ jobs:
       run: |
         msbuild /t:Publish /p:Configuration=Release /p:Platform="Any CPU" Codeformer.sln
 
-    - name: Zip published files
-      run: |
-        Compress-Archive -Path "codeformer-DotNetWrapper\bin\Release\app.publish\Application Files\Codeformer_1_1_0_1\*" -DestinationPath "codeformer-DotNetWrapper\bin\Release\app.publish\Application Files\Codeformer_1_1_0_1\publish.zip" -Force
-
     - name: Upload release asset
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.create_release.outputs.id }}/assets
-        asset_path: Codeformer/bin/Release/publish.zip
-        asset_name: CodeformerDotnet.zip
+        asset_path: codeformer-DotNetWrapper\bin\Release\app.publish
         asset_content_type: application/zip
 
   deploy:
