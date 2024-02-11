@@ -25,37 +25,31 @@ jobs:
       run: |
         msbuild /t:Publish /p:Configuration=Release /p:Platform="Any CPU" Codeformer.sln
 
-    - name: Archive published files
-      uses: actions/upload-artifact@v2
+    - name: Zip published files
+      run: |
+        Compress-Archive -Path Codeformer/bin/Release/publish -DestinationPath Codeformer/bin/Release/publish.zip -Force
+
+    - name: Upload release asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        name: Codeformer
-        path: Codeformer/bin/Release/publish # Adjust the path according to your project structure
+        upload_url: https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.create_release.outputs.id }}/assets
+        asset_path: Codeformer/bin/Release/publish.zip
+        asset_name: CodeformerDotnet.zip
+        asset_content_type: application/zip
 
   deploy:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     needs: build
     steps:
-    - name: Download artifact
-      uses: actions/download-artifact@v2
-      with:
-        name: Codeformer
-
     - name: Create release
       id: create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: v1.0.0 # Change this to your desired tag name
-        release_name: Release v1.0.0 # Change this to your desired release name
+        tag_name: v1.0.0
+        release_name: Release v1.0.0
         draft: false
         prerelease: false
-
-    - name: Upload artifact to release
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_name: CodeformerDotnet.zip # Change this to the name you want for the artifact
-        asset_content_type: application/zip
