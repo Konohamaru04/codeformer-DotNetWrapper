@@ -23,7 +23,7 @@ jobs:
 
     - name: Publish
       run: |
-        msbuild /t:Publish /p:Configuration=Release /p:Platform="Any CPU" Codeformer.csproj
+        msbuild /t:Publish /p:Configuration=Release /p:Platform="Any CPU" Codeformer.sln
 
     - name: Archive published files
       uses: actions/upload-artifact@v2
