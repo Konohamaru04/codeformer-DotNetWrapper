@@ -13,10 +13,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
       
-    - name: Setup .NET Framework
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '4.8.x'
 
     - name: Build
       run: |
