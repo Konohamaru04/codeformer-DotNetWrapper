@@ -27,7 +27,7 @@ jobs:
 
     - name: Zip published files
       run: |
-        Compress-Archive -Path "codeformer-DotNetWrapper\bin\Release\app.publish\Application Files\Codeformer_1_1_0_1\*" -DestinationPath Codeformer/bin/Release/publish.zip -Force
+        Compress-Archive -Path "codeformer-DotNetWrapper\bin\Release\app.publish\Application Files\Codeformer_1_1_0_1\*" -DestinationPath "codeformer-DotNetWrapper\bin\Release\app.publish\Application Files\Codeformer_1_1_0_1\publish.zip" -Force
 
     - name: Upload release asset
       uses: actions/upload-release-asset@v1
