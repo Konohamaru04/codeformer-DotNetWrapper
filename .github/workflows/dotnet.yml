@@ -15,33 +15,17 @@ jobs:
 
     - name: Download .NET Framework 4.8 Developer Pack
       run: |
-        curl -o dotnet_framework.exe https://download.visualstudio.microsoft.com/download/pr/7e8e0667-d6ae-4c38-a2b7-96007232f95a/1e3cc06cb4fd07fbd5fb3b0fcd0c9fbf/ndp48-devpack-enu.exe
-        .\dotnet_framework.exe /quiet /norestart
+        curl -L -o dotnet_framework.exe https://download.visualstudio.microsoft.com/download/pr/7e8e0667-d6ae-4c38-a2b7-96007232f95a/1e3cc06cb4fd07fbd5fb3b0fcd0c9fbf/ndp48-devpack-enu.exe
+        mkdir dotnet_framework
+        7z x dotnet_framework.exe -o./dotnet_framework
+
+    - name: Install .NET Framework 4.8 Developer Pack
+      run: |
+        powershell -Command "& {Start-Process -FilePath 'dotnet_framework\NDP48-KB4486129-x86-x64-AllOS-ENU.exe' -ArgumentList '/q' -Wait}"
 
     - name: Setup .NET Framework 4.8
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 4.8.x
 
-    - name: Restore Dependencies
-      run: dotnet restore
-
-    - name: Build
-      run: dotnet build --configuration Release
-
-    - name: Test
-      run: dotnet test
-
-    - name: Publish Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: v1.0.0  # specify your tag name
-        release_name: Release v1.0.0  # specify your release name
-        body: |
-          Release notes for v1.0.0:
-          - Describe your changes here
-        draft: false
-        prerelease: false
+    # Continue with the rest of your workflow steps...
