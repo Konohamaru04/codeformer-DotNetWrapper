@@ -15,11 +15,8 @@ jobs:
 
     - name: Download .NET Framework 4.8 Developer Pack
       run: |
-        $url = 'https://download.visualstudio.microsoft.com/download/pr/7e8e0667-d6ae-4c38-a2b7-96007232f95a/1e3cc06cb4fd07fbd5fb3b0fcd0c9fbf/ndp48-devpack-enu.exe'
-        $output = 'dotnet_framework.exe'
-        $webClient = New-Object System.Net.WebClient
-        $webClient.DownloadFile($url, $output)
-        Start-Process -FilePath $output -ArgumentList '/q' -Wait
+        wget 'https://download.visualstudio.microsoft.com/download/pr/7e8e0667-d6ae-4c38-a2b7-96007232f95a/1e3cc06cb4fd07fbd5fb3b0fcd0c9fbf/ndp48-devpack-enu.exe' -OutFile 'dotnet_framework.exe'
+        Start-Process -FilePath 'dotnet_framework.exe' -ArgumentList '/q' -Wait
 
     - name: Setup .NET Framework 4.8
       uses: actions/setup-dotnet@v1
