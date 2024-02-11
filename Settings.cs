@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Accord;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -24,7 +25,8 @@ namespace Codeformer
             checkBox1.Checked = Form1.background_enhance;
             checkBox2.Checked = Form1.face_upsample;
             trackBar1.Value = Form1.upscale;
-            trackBar2.Value = Convert.ToInt32(Form1.codeformer_fidelity * 100);
+            //trackBar2.Value = Convert.ToInt32(Form1.codeformer_fidelity * 100);
+            trackBar2.Value = (int)((Form1.codeformer_fidelity - 0.1) / (1.0 - 0.1) * 100);
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
@@ -47,7 +49,7 @@ namespace Codeformer
 
         private void trackBar2_MouseUp(object sender, MouseEventArgs e)
         {
-            Form1.codeformer_fidelity = trackBar2.Value / 100;
+            Form1.codeformer_fidelity = (float)(0.1 + (1.0 - 0.1) * (trackBar2.Value / 100));
             form1.textBox1.AppendText($"Codeformer fidelity {Form1.codeformer_fidelity}" + Environment.NewLine);
         }
     }

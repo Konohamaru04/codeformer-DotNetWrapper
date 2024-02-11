@@ -13,14 +13,13 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Codeformer
 {
     public partial class Form1 : Form
     {
         public static int upscale = 2;
-        public static float codeformer_fidelity = 0.5f;
+        public static float codeformer_fidelity = 1f;
         public static bool face_upsample = true;
         public static bool background_enhance = true;
 
@@ -240,7 +239,7 @@ namespace Codeformer
                     using (process = new Process())
                     {
                         process.StartInfo.FileName = $"python";
-                        process.StartInfo.Arguments = $"cf_clr.py {imgPath} --background_enhance --face_upsample --upscale {upscale} --codeformer_fidelity {codeformer_fidelity}";
+                        process.StartInfo.Arguments = $"cf_clr.py {imgPath} {(background_enhance ? "--background_enhance" : "")} {(face_upsample ? "--face_upsample" : "")} --upscale {upscale} --codeformer_fidelity {codeformer_fidelity}";
                         dlog($"{process.StartInfo.FileName} {process.StartInfo.Arguments}");
                         process.StartInfo.UseShellExecute = false;
                         process.StartInfo.RedirectStandardOutput = true;
@@ -291,7 +290,7 @@ namespace Codeformer
                 using (process = new Process())
                 {
                     process.StartInfo.FileName = $"python";
-                    process.StartInfo.Arguments = $"cf_clr.py {inputImagePath} --background_enhance {background_enhance} --face_upsample {face_upsample} --upscale {upscale} --codeformer_fidelity {codeformer_fidelity}"; ;
+                    process.StartInfo.Arguments = $"cf_clr.py {inputImagePath} {(background_enhance ? "--background_enhance" : "")} {(face_upsample ? "--face_upsample" : "")} --upscale {upscale} --codeformer_fidelity {codeformer_fidelity}"; ;
                     process.StartInfo.UseShellExecute = false;
                     process.StartInfo.RedirectStandardOutput = true;
                     process.StartInfo.RedirectStandardError = true;
@@ -343,7 +342,7 @@ namespace Codeformer
                 using (process = new Process())
                 {
                     process.StartInfo.FileName = $"ffmpeg";
-                    process.StartInfo.Arguments = $"-framerate {fps} -i {outFolderPath}/frame_%08d.png -c:v h264_nvenc \"{FileName}\"";
+                    process.StartInfo.Arguments = $"-framerate {fps} -i {inputImagePath}/frame_%08d.png -c:v h264_nvenc \"{FileName}\"";
                     dlog($"{process.StartInfo.FileName} {process.StartInfo.Arguments}");
                     process.StartInfo.UseShellExecute = false;
                     process.StartInfo.RedirectStandardOutput = true;
@@ -654,16 +653,18 @@ namespace Codeformer
 
                         for (int i = start; i < reader.FrameCount; i++)
                         {
-                            Bitmap frame = reader.ReadVideoFrame(i);
-                            LoadImage((Image)frame.Clone());
                             string frameName = GetFrameName(i);
                             string frameFileName = Path.Combine(inputImagePath, frameName);
                             if (!File.Exists(frameFileName))
+                            {
+                                Bitmap frame = reader.ReadVideoFrame(i);
+                                LoadImage((Image)frame.Clone());
+                                dlog($"Extracting: {frameFileName}");
                                 frame.Save(frameFileName, System.Drawing.Imaging.ImageFormat.Png);
-                            dlog($"Extracting: {frameFileName}");
+                                frame.Dispose();
+                            }
                             LoadOrgImage(GetInputImageWithIndex(i));
-                            LoadEnhImage(GetInputImageWithIndex(i));
-                            frame.Dispose();
+                            LoadEnhImage(GetInputImageWithIndex(i));         
                         }
 
                         BeginInvoke(new Action(() =>
