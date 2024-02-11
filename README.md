@@ -3,7 +3,7 @@
 ## Requirements
 
 - Python (Tested on 3.9.0)
-- .NET Framework 4.8+
+- .NET Framework 4.8
 - codeformer-pip
 
 ## Setup
