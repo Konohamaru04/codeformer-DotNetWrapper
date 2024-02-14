@@ -342,7 +342,7 @@ namespace Codeformer
                 using (process = new Process())
                 {
                     process.StartInfo.FileName = $"ffmpeg";
-                    process.StartInfo.Arguments = $"-framerate {fps} -i {inputImagePath}/frame_%08d.png -c:v h264_nvenc \"{FileName}\"";
+                    process.StartInfo.Arguments = $"-framerate {fps} -i {outFolderPath}/frame_%08d.png -c:v h264_nvenc \"{FileName}\"";
                     dlog($"{process.StartInfo.FileName} {process.StartInfo.Arguments}");
                     process.StartInfo.UseShellExecute = false;
                     process.StartInfo.RedirectStandardOutput = true;
