@@ -25,6 +25,21 @@ jobs:
         run: |
           msbuild /t:Publish /p:Configuration=Release /p:Platform="Any CPU" Codeformer.sln
 
+      - name: Create Release
+        id: create_release
+        run: |
+          release_id=$(curl -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "tag_name": "${{ github.sha }}",
+              "name": "Release ${{ github.sha }}",
+              "draft": false,
+              "prerelease": false
+            }' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/releases" | jq -r '.id')
+          echo "::set-output name=release_id::$release_id"
+
       - name: List files before tar
         run: |
           dir ${GITHUB_WORKSPACE}
