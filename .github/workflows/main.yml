@@ -31,7 +31,7 @@ jobs:
           $response = Invoke-RestMethod -Uri "https://api.github.com/repos/${GITHUB_REPOSITORY}/releases" `
                      -Headers @{
                        Authorization = "token $env:GITHUB_TOKEN"
-                       Content-Type = "application/json"
+                       "Content-Type" = "application/json"
                      } `
                      -Method POST `
                      -Body '{
