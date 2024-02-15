@@ -29,7 +29,7 @@ jobs:
         dir ${GITHUB_WORKSPACE}
     - name: Create Zip
       run: | 
-        tar.exe -a -c -f ${GITHUB_WORKSPACE}\Codeformer-Dotnet.zip D:\a\codeformer-DotNetWrapper\codeformer-DotNetWrapper\bin\Release\app.publish
+        tar.exe -a -c -f D:\a\codeformer-DotNetWrapper\codeformer-DotNetWrapper\Codeformer-Dotnet.zip D:\a\codeformer-DotNetWrapper\codeformer-DotNetWrapper\bin\Release\app.publish
         
     - name: List after before tar
       run: |
