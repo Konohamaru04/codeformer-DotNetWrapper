@@ -25,21 +25,6 @@ jobs:
         run: |
           msbuild /t:Publish /p:Configuration=Release /p:Platform="Any CPU" Codeformer.sln
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: |
-            Changes in this Release
-            - First Change
-            - Second Change
-          draft: false
-          prerelease: false
-
       - name: List files before tar
         run: |
           dir ${GITHUB_WORKSPACE}
@@ -51,11 +36,11 @@ jobs:
       - name: List after before tar
         run: |
           dir ${GITHUB_WORKSPACE}
-
+          
       - name: Upload artifact to release
         uses: actions/upload-release-asset@v1
         with:
-          upload_url: https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/${{ steps.create_release.outputs.release_id }}/assets?name=Codeformer-Dotnet.zip
+          upload_url: https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/tag/1.0/assets?name=Codeformer-Dotnet.zip
           asset_path: ${GITHUB_WORKSPACE}\Codeformer-Dotnet.zip
           asset_name: Codeformer-Dotnet.zip
           asset_content_type: application/zip
