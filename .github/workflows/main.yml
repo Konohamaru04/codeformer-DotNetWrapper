@@ -10,37 +10,45 @@ jobs:
     runs-on: windows-latest
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v1.0.2  # This will set up the MSBuild tool
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1.0.2  # This will set up the MSBuild tool
 
-    - name: Build
-      run: |
-        nuget restore Codeformer.sln
-        msbuild /p:Configuration=Release Codeformer.csproj
+      - name: Build
+        run: |
+          nuget restore Codeformer.sln
+          msbuild /p:Configuration=Release Codeformer.csproj
 
-    - name: Publish
-      run: |
-        msbuild /t:Publish /p:Configuration=Release /p:Platform="Any CPU" Codeformer.sln
-    - name: List files before tar
-      run: |
-        dir ${GITHUB_WORKSPACE}
-    - name: Create Zip
-      run: | 
-        tar.exe -a -c -f D:\a\codeformer-DotNetWrapper\codeformer-DotNetWrapper\Codeformer-Dotnet.zip D:\a\codeformer-DotNetWrapper\codeformer-DotNetWrapper\bin\Release\app.publish
+      - name: Publish
+        run: |
+          msbuild /t:Publish /p:Configuration=Release /p:Platform="Any CPU" Codeformer.sln
+
+      - name: List files before tar
+        run: |
+          dir ${GITHUB_WORKSPACE}
+
+      - name: Create Zip
+        run: | 
+          tar.exe -a -c -f D:\a\codeformer-DotNetWrapper\codeformer-DotNetWrapper\Codeformer-Dotnet.zip D:\a\codeformer-DotNetWrapper\codeformer-DotNetWrapper\bin\Release\app.publish
         
-    - name: List after before tar
-      run: |
-        dir ${GITHUB_WORKSPACE}
-    - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v4.3.1
-      with:
-        # Artifact name
-        name: Codeformer-Dotnet # optional, default is artifact
-        # A file, directory or wildcard pattern that describes what to upload
-        path: Codeformer-Dotnet.zip
+      - name: List after before tar
+        run: |
+          dir ${GITHUB_WORKSPACE}
 
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v4.3.1
+        with:
+          # Artifact name
+          name: Codeformer-Dotnet # optional, default is artifact
+          # A file, directory or wildcard pattern that describes what to upload
+          path: Codeformer-Dotnet.zip
 
-          
+      - name: Upload artifact to release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/${{ steps.get_release_id.outputs.release_id }}/assets?name=Codeformer-Dotnet.zip
+          asset_path: ${GITHUB_WORKSPACE}\Codeformer-Dotnet.zip
+          asset_name: Codeformer-Dotnet.zip
+          asset_content_type: application/zip
