@@ -32,7 +32,25 @@ namespace Codeformer
             this.fps = fps;
             this.isEnhance = isEnhance;
 
-            this.Text = $"Playing at Total: {frameCount} Framecount: {frameCount} FPS: {fps} Enhanced: {isEnhance}";
+            if (pictureBox1.InvokeRequired)
+            {
+                BeginInvoke(new Action(() =>
+                {
+                    if (isEnhance)
+                        pictureBox1.ImageLocation = GetOutputImageWithIndex(startIndex);
+                    else
+                        pictureBox1.ImageLocation = GetInputImageWithIndex(startIndex);
+                }));
+            }
+            else
+            {
+                if (isEnhance)
+                    pictureBox1.ImageLocation = GetOutputImageWithIndex(startIndex);
+                else
+                    pictureBox1.ImageLocation = GetInputImageWithIndex(startIndex);
+            }
+
+            //this.Text = $"Playing at Total: {frameCount} Framecount: {frameCount} FPS: {fps} Enhanced: {isEnhance}";
             //if (pictureBox1.InvokeRequired)
             //{
             //    BeginInvoke(new Action(() =>
@@ -48,7 +66,8 @@ namespace Codeformer
 
         private void Zoom_Load(object sender, EventArgs e)
         {
-            pictureBox1_Click(null, EventArgs.Empty);
+            //pictureBox1_Click(null, EventArgs.Empty);
+            
         }
 
         private string GetInputImageWithIndex(int index)
@@ -99,9 +118,10 @@ namespace Codeformer
                     //{
 
                     //}));
-                    int i = 0;
+                    int i = startIndex;
 
-                    while (true) {
+                    while (true)
+                    {
                         Thread.Sleep(Convert.ToInt32(fps));
                         if (!isPlaying) break;
                         string frameName = GetFrameName(i);
@@ -123,7 +143,7 @@ namespace Codeformer
                                 i = 0;
                         }
 
-                        if(i < frameCount)
+                        if (i < frameCount)
                         {
                             i++;
                         }
@@ -131,11 +151,11 @@ namespace Codeformer
                         {
                             i = 0;
                         }
-                        
+
                     }
                     //for (int i = start; i < frameCount; i++)
                     //{
-                        
+
                     //}
                     //}
                 });
