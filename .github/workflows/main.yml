@@ -24,4 +24,17 @@ jobs:
     - name: Publish
       run: |
         msbuild /t:Publish /p:Configuration=Release /p:Platform="Any CPU" Codeformer.sln
+    - name: Create Zip
+      run: | 
+        tar.exe -a -c -f Codeformer-Dotnet.zip ${GITHUB_WORKSPACE}\bin\Release\app.publish
+        
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v4.3.1
+      with:
+        # Artifact name
+        name: Codeformer-Dotnet # optional, default is artifact
+        # A file, directory or wildcard pattern that describes what to upload
+        path: ${GITHUB_WORKSPACE}\Codeformer-Dotnet.zip
 
+
+          
