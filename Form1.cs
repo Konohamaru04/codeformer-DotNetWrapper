@@ -18,7 +18,7 @@ namespace Codeformer
 {
     public partial class Form1 : Form
     {
-        public static int upscale = 2;
+        public static int upscale = 4;
         public static float codeformer_fidelity = 1f;
         public static bool face_upsample = true;
         public static bool background_enhance = true;
@@ -100,7 +100,7 @@ namespace Codeformer
 
         private async void button3_Click(object sender, EventArgs e)
         {
-            button8.Visible = false;
+            //button8.Visible = false;
             codeFormer = !codeFormer;
             //CreateDirectory();
             if (codeFormer)
@@ -160,7 +160,7 @@ namespace Codeformer
         {
             ShowLoading();
             int value = trackBar1.Value;
-            button8.Visible = false;
+            //button8.Visible = false;
             //CreateDirectory();
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
@@ -190,6 +190,7 @@ namespace Codeformer
         private async Task ExtractAllFrames()
         {
             int value = trackBar1.Value;
+            label1.Visible = true;
             await Task.Run(() =>
             {
                 using (VideoFileReader reader = new VideoFileReader())
@@ -197,11 +198,19 @@ namespace Codeformer
                     reader.Open(videoFilePath);
                     
                     fps = (double)reader.FrameRate;
-
+                    BeginInvoke(new Action(() =>
+                    {
+                        trackBar1.Maximum = Convert.ToInt32(reader.FrameCount);
+                    }));
 
                     for (int i = 0; i < reader.FrameCount; i++)
                     {
                         frameCount = i;
+                        BeginInvoke(new Action(() =>
+                        {
+                            label1.Text = $"Extracting {i}/{reader.FrameCount}";
+                        }));
+                        
                         Bitmap frame = reader.ReadVideoFrame(i);
                         string frameName = GetFrameName(i);
                         string frameFileName = Path.Combine(inputImagePath, frameName);
@@ -218,11 +227,12 @@ namespace Codeformer
                         {
                             frame.Dispose();
                         }
-                        BeginInvoke(new Action(() =>
-                        {
-                            trackBar1.Maximum = i;
-                        }));
+                        
                     }
+                    BeginInvoke(new Action(() =>
+                    {
+                        label1.Visible = false;
+                    }));
                 }
             });
         }
@@ -412,6 +422,11 @@ namespace Codeformer
             return $"{outFolderPath}/frame_{index:00000000}.png";
         }
 
+        private string GetDeletedFramesPath(int index)
+        {
+            return $"{outFolderPath}/Temp_frame_{index:00000000}.png";
+        }
+
         private void LoadImage(int index)
         {
             LoadOrgImage(GetInputImageWithIndex(index));
@@ -462,14 +477,14 @@ namespace Codeformer
                 button4.BackColor = Color.Green;
                 pictureBox1.Visible = false;
                 pictureBox2.Visible = true;
-                button8.Visible = true;
+                //button8.Visible = true;
             }
             else
             {
                 button4.BackColor = Color.Red;
                 pictureBox1.Visible = true;
                 pictureBox2.Visible = false;
-                button8.Visible = false;
+                //button8.Visible = false;
             }
         }
 
@@ -517,13 +532,14 @@ namespace Codeformer
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            label1.Visible = false;
             trackBar1.Enabled = false;
             button4.BackColor = Color.Red;
             button3.BackColor = Color.Red;
             pictureBox1.Visible = true;
             pictureBox2.Visible = false;
             button7.Visible = false;
-            button8.Visible = false;
+            //button8.Visible = false;
             CreateDirectory();
 
             // Create a new FileSystemWatcher
@@ -621,11 +637,12 @@ namespace Codeformer
         private async void button2_Click(object sender, EventArgs e)
         {
             convertInprogress = true;
-            button8.Visible = false;
+            //button8.Visible = false;
             button3.Enabled = false;
             button4.Enabled = false;
             button5.Enabled = false;
             button6.Enabled = false;
+            button9.Enabled = false;
             trackBar1.Enabled = false;
             pictureBox1.Visible = true;
             pictureBox2.Visible = false;
@@ -646,12 +663,12 @@ namespace Codeformer
             {
                 try
                 {
-                    CreateDirectory();
+                    //CreateDirectory();
                     using (VideoFileReader reader = new VideoFileReader())
                     {
                         reader.Open(videoFilePath);
 
-                        for (int i = start; i < reader.FrameCount; i++)
+                        for (int i = 0; i < reader.FrameCount; i++)
                         {
                             string frameName = GetFrameName(i);
                             string frameFileName = Path.Combine(inputImagePath, frameName);
@@ -673,6 +690,13 @@ namespace Codeformer
                             pictureBox2.Visible = true;
                             button7.Visible = true;
                             ShowProcessing();
+                            if(start > 10)
+                            {
+                                for(int i = 0; i < start; i++)
+                                {
+                                    DeleteFrames(i);
+                                }
+                            }
                         }));
 
                         await ApplyCodeFormer();
@@ -683,9 +707,17 @@ namespace Codeformer
 
                         ConvertTovideo();
 
+                        if (start > 10)
+                        {
+                            for (int i = 0; i < start; i++)
+                            {
+                                RestoreFrames(i);
+                            }
+                        }
+
                         BeginInvoke(new Action(() =>
                         {
-                            timer1.Enabled = true;
+                            timer1.Enabled = false;
                             //timer1.Stop();
                             button2.BackColor = Color.Green;
                             button3.Enabled = true;
@@ -695,6 +727,7 @@ namespace Codeformer
                             trackBar1.Enabled = true;
                             button7.Visible = false;
                             button7.Text = "Stop";
+                            button9.Enabled = true;
                         }));
                         hardStop = false;
                         convertInprogress = false;
@@ -709,6 +742,24 @@ namespace Codeformer
                     dlog(ex.Message);
                 }
             });
+        }
+
+        public void DeleteFrames(int frameIndex)
+        {
+            if (File.Exists(GetInputImageWithIndex(frameIndex)))
+            {
+                dlog($"Deletd: {GetInputImageWithIndex(frameIndex)}");
+                File.Move(GetInputImageWithIndex(frameIndex), GetDeletedFramesPath(frameIndex));
+            }
+        }
+
+        public void RestoreFrames(int frameIndex)
+        {
+            if (File.Exists(GetInputImageWithIndex(frameIndex)))
+            {
+                dlog($"Restored: {GetInputImageWithIndex(frameIndex)}");
+                File.Move(GetDeletedFramesPath(frameIndex), GetInputImageWithIndex(frameIndex));
+            }
         }
 
         private async void textBox2_TextChanged(object sender, EventArgs e)
@@ -901,7 +952,7 @@ namespace Codeformer
                 button4.BackColor = Color.Red;
                 pictureBox1.Visible = true;
                 pictureBox2.Visible = false;
-                button8.Visible = false;
+                //button8.Visible = false;
                 int value = trackBar1.Value;
                 LoadImage(value);
                 //await Task.Run(() =>
@@ -940,6 +991,10 @@ namespace Codeformer
                 //    }
                 //});
             }
+            //else
+            //{
+            //    timer1.Enabled = false;
+            //}
 
         }
 
@@ -960,15 +1015,24 @@ namespace Codeformer
 
         private void button8_Click(object sender, EventArgs e)
         {
-            Zoom zoom = new Zoom(GetOutputImageWithIndex(trackBar1.Value));
-            zoom.Show();
+            if (enhanced)
+            {
+                Zoom zoom = new Zoom(trackBar1.Maximum - 1, trackBar1.Value, fps, enhanced);
+                zoom.Show();
+            }
+            else
+            {
+                Zoom zoom = new Zoom(trackBar1.Maximum - 1, trackBar1.Value, fps, enhanced);
+                zoom.Show();
+            }
+            
         }
 
         private void button4_StyleChanged(object sender, EventArgs e)
         {
             if (!button4.Enabled)
             {
-                button8.Visible = false;
+                //button8.Visible = false;
             }
         }
 
@@ -1055,6 +1119,16 @@ namespace Codeformer
         {
             Settings settings = new Settings();
             settings.ShowDialog();
+        }
+
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+            button9_Click(null, EventArgs.Empty);
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            button9_Click(null, EventArgs.Empty);
         }
     }
 }
