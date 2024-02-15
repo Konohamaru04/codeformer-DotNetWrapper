@@ -38,10 +38,10 @@ jobs:
         run: |
           dir ${GITHUB_WORKSPACE}
           
-      - name: Upload artifact to release
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/1.0/assets?name=Codeformer-Dotnet.zip
-          asset_path: D:\a\codeformer-DotNetWrapper\codeformer-DotNetWrapper\Codeformer-Dotnet.zip
-          asset_name: Codeformer-Dotnet.zip
-          asset_content_type: application/zip
+      # - name: Upload artifact to release
+      #   uses: actions/upload-release-asset@v1
+      #   with:
+      #     upload_url: https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/1.0/assets?name=Codeformer-Dotnet.zip
+      #     asset_path: D:\a\codeformer-DotNetWrapper\codeformer-DotNetWrapper\Codeformer-Dotnet.zip
+      #     asset_name: Codeformer-Dotnet.zip
+      #     asset_content_type: application/zip
