@@ -28,17 +28,17 @@ jobs:
       - name: Create Release
         id: create_release
         run: |
-          RELEASE_ID=$(curl -X POST \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Content-Type: application/json" \
+          $release_id = (curl -X POST `
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" `
+            -H "Content-Type: application/json" `
             -d '{
-              "tag_name": "${{ github.sha }}",
-              "name": "Release ${{ github.sha }}",
+              "tag_name": "dfc86763007179801fde20bec0592190a62b9c70",
+              "name": "Release dfc86763007179801fde20bec0592190a62b9c70",
               "draft": false,
               "prerelease": false
-            }' \
-            "https://api.github.com/repos/${GITHUB_REPOSITORY}/releases" | jq -r '.id')
-          echo "Release ID is $RELEASE_ID"
+            }' `
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/releases" | Select-Object -ExpandProperty id)
+          Write-Output "Release ID is $release_id"
 
       - name: List files before tar
         run: |
