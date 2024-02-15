@@ -33,3 +33,6 @@
 5. **Enjoy!**
    - Once the application is running, follow the on-screen instructions to use its features.
 
+# Download latest build 
+   [Codeformer-Dotnet](https://github.com/Konohamaru04/codeformer-DotNetWrapper/actions/runs/7919492081/artifacts/1248682028)
+
