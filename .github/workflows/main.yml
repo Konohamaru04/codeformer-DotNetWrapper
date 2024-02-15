@@ -25,15 +25,16 @@ jobs:
         run: |
           msbuild /t:Publish /p:Configuration=Release /p:Platform="Any CPU" Codeformer.sln
 
-      - name: List files before tar
+      - name: List files before zip
         run: |
           dir ${GITHUB_WORKSPACE}
 
       - name: Create Zip
         run: | 
-          tar.exe -a -c -f D:\a\codeformer-DotNetWrapper\codeformer-DotNetWrapper\Codeformer-Dotnet.zip D:\a\codeformer-DotNetWrapper\codeformer-DotNetWrapper\bin\Release\app.publish
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          [System.IO.Compression.ZipFile]::CreateFromDirectory("D:\a\codeformer-DotNetWrapper\codeformer-DotNetWrapper\bin\Release\app.publish", "D:\a\codeformer-DotNetWrapper\codeformer-DotNetWrapper\Codeformer-Dotnet.zip")
         
-      - name: List after before tar
+      - name: List files after zip
         run: |
           dir ${GITHUB_WORKSPACE}
           
