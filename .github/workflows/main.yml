@@ -26,14 +26,14 @@ jobs:
         msbuild /t:Publish /p:Configuration=Release /p:Platform="Any CPU" Codeformer.sln
     - name: List files before tar
       run: |
-        ls -al ${GITHUB_WORKSPACE}
+        dir ${GITHUB_WORKSPACE}
     - name: Create Zip
       run: | 
         tar.exe -a -c -f ${GITHUB_WORKSPACE}\Codeformer-Dotnet.zip D:\a\codeformer-DotNetWrapper\codeformer-DotNetWrapper\bin\Release\app.publish
         
     - name: List after before tar
       run: |
-        ls -al ${GITHUB_WORKSPACE}
+        dir ${GITHUB_WORKSPACE}
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v4.3.1
       with:
