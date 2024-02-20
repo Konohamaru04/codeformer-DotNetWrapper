@@ -25,26 +25,26 @@ jobs:
         run: |
           msbuild /t:Publish /p:Configuration=Release /p:Platform="Any CPU" Codeformer-Dotnet.sln
 
-      - name: List files before zip
-        run: |
-          dir ${GITHUB_WORKSPACE}
+      # - name: List files before zip
+      #   run: |
+      #     dir ${GITHUB_WORKSPACE}
 
-      - name: Create Zip
-        run: | 
-          Add-Type -AssemblyName System.IO.Compression.FileSystem
-          [System.IO.Compression.ZipFile]::CreateFromDirectory("D:\a\codeformer-DotNetWrapper\codeformer-DotNetWrapper\bin\Release\app.publish", "D:\a\codeformer-DotNetWrapper\codeformer-DotNetWrapper\Codeformer-Dotnet.zip")
+      # - name: Create Zip
+      #   run: | 
+      #     Add-Type -AssemblyName System.IO.Compression.FileSystem
+      #     [System.IO.Compression.ZipFile]::CreateFromDirectory("D:\a\codeformer-DotNetWrapper\codeformer-DotNetWrapper\bin\Release\app.publish", "D:\a\codeformer-DotNetWrapper\codeformer-DotNetWrapper\Codeformer-Dotnet.zip")
         
-      - name: List files after zip
-        run: |
-          dir ${GITHUB_WORKSPACE}
+      # - name: List files after zip
+      #   run: |
+      #     dir ${GITHUB_WORKSPACE}
 
-      - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v4.3.1
-        with:
-          # Artifact name
-          name: Codeformer-Dotnet # optional, default is artifact
-          # A file, directory or wildcard pattern that describes what to upload
-          path: D:\a\codeformer-DotNetWrapper\codeformer-DotNetWrapper\Codeformer-Dotnet.zip
+      # - name: Upload a Build Artifact
+      #   uses: actions/upload-artifact@v4.3.1
+      #   with:
+      #     # Artifact name
+      #     name: Codeformer-Dotnet # optional, default is artifact
+      #     # A file, directory or wildcard pattern that describes what to upload
+      #     path: D:\a\codeformer-DotNetWrapper\codeformer-DotNetWrapper\Codeformer-Dotnet.zip
           
       # - name: Upload artifact to release
       #   uses: actions/upload-release-asset@v1
