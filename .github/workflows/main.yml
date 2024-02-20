@@ -18,12 +18,12 @@ jobs:
 
       - name: Build
         run: |
-          nuget restore Codeformer.sln
-          msbuild /p:Configuration=Release Codeformer.csproj
+          nuget restore Codeformer-Dotnet.sln
+          msbuild /p:Configuration=Release Codeformer-Dotnet.csproj
 
       - name: Publish
         run: |
-          msbuild /t:Publish /p:Configuration=Release /p:Platform="Any CPU" Codeformer.sln
+          msbuild /t:Publish /p:Configuration=Release /p:Platform="Any CPU" Codeformer-Dotnet.sln
 
       - name: List files before zip
         run: |
