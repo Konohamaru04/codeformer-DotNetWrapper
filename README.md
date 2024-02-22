@@ -35,7 +35,7 @@ This repository contains a .NET wrapper for using Codeformer, a tool for enhanci
 
 ## Contributors
 
-- [Your Name](link to your profile)
+- Just me 
 
 ## License
 
