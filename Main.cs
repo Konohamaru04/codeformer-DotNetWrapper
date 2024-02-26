@@ -160,7 +160,10 @@ namespace Codeformer_Dotnet
                         }
                         BeginInvoke(new Action(() =>
                         {
-                            trackBar1.Value++;
+                            if (trackBar1.Value < trackBar1.Maximum)
+                            {
+                                trackBar1.Value++;
+                            }
                         }));
                     }
                     endTime = DateTime.Now;
