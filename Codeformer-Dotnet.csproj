@@ -36,6 +36,9 @@
     <None Update="cf_clr.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="gf.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="loading1.gif">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

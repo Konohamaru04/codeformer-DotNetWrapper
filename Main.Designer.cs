@@ -34,6 +34,7 @@
             panel2 = new Panel();
             textBox1 = new TextBox();
             panel3 = new Panel();
+            comboBox1 = new ComboBox();
             button6 = new Button();
             button5 = new Button();
             button4 = new Button();
@@ -103,6 +104,7 @@
             // 
             // panel3
             // 
+            panel3.Controls.Add(comboBox1);
             panel3.Controls.Add(button6);
             panel3.Controls.Add(button5);
             panel3.Controls.Add(button4);
@@ -116,9 +118,20 @@
             panel3.Size = new Size(1591, 121);
             panel3.TabIndex = 2;
             // 
+            // comboBox1
+            // 
+            comboBox1.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboBox1.FormattingEnabled = true;
+            comboBox1.Items.AddRange(new object[] { "GFPGAN", "Codeformer" });
+            comboBox1.Location = new Point(170, 67);
+            comboBox1.Name = "comboBox1";
+            comboBox1.Size = new Size(121, 23);
+            comboBox1.TabIndex = 8;
+            comboBox1.SelectedValueChanged += comboBox1_SelectedValueChanged;
+            // 
             // button6
             // 
-            button6.Location = new Point(630, 66);
+            button6.Location = new Point(767, 66);
             button6.Name = "button6";
             button6.Size = new Size(75, 23);
             button6.TabIndex = 7;
@@ -129,7 +142,7 @@
             // 
             // button5
             // 
-            button5.Location = new Point(549, 66);
+            button5.Location = new Point(686, 66);
             button5.Name = "button5";
             button5.Size = new Size(75, 23);
             button5.TabIndex = 6;
@@ -140,7 +153,7 @@
             // 
             // button4
             // 
-            button4.Location = new Point(462, 66);
+            button4.Location = new Point(599, 66);
             button4.Name = "button4";
             button4.Size = new Size(81, 23);
             button4.TabIndex = 5;
@@ -151,7 +164,7 @@
             // 
             // button3
             // 
-            button3.Location = new Point(347, 66);
+            button3.Location = new Point(484, 66);
             button3.Name = "button3";
             button3.Size = new Size(109, 23);
             button3.TabIndex = 4;
@@ -161,17 +174,17 @@
             // 
             // button2
             // 
-            button2.Location = new Point(259, 66);
+            button2.Location = new Point(396, 66);
             button2.Name = "button2";
             button2.Size = new Size(82, 23);
             button2.TabIndex = 3;
-            button2.Text = "Codeformer";
+            button2.Text = "Enhance";
             button2.UseVisualStyleBackColor = true;
             button2.Click += button2_Click;
             // 
             // button1
             // 
-            button1.Location = new Point(169, 66);
+            button1.Location = new Point(306, 66);
             button1.Name = "button1";
             button1.Size = new Size(75, 23);
             button1.TabIndex = 2;
@@ -240,5 +253,6 @@
         private Button button4;
         private Button button5;
         private Button button6;
+        private ComboBox comboBox1;
     }
 }

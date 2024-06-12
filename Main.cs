@@ -4,6 +4,7 @@ using System.Diagnostics;
 using Emgu.CV.Structure;
 using Microsoft.VisualBasic.Logging;
 using Python.Runtime;
+using System.IO;
 
 namespace Codeformer_Dotnet
 {
@@ -19,8 +20,11 @@ namespace Codeformer_Dotnet
                 PythonEngine.BeginAllowThreads();
             }
 
+            comboBox1.SelectedIndex = 0;
+
         }
 
+        public static bool isCodeFormer = false;
         public static int upscale = 4;
         public static float codeformer_fidelity = 1f;
         public static bool face_upsample = true;
@@ -115,13 +119,50 @@ namespace Codeformer_Dotnet
         private async Task RunCodeFormer()
         {
             int index = trackBar1.Value;
+            if (!File.Exists(GetInputImageWithIndex(index)))
+            {
+                if (pictureBox1.InvokeRequired)
+                {
+                    BeginInvoke(new Action(() =>
+                    {
+                        pictureBox1.Image = null;
+                    }));
+                }
+                else
+                {
+                    pictureBox1.Image = null;
+                }
+
+                if (pictureBox2.InvokeRequired)
+                {
+                    BeginInvoke(new Action(() =>
+                    {
+                        pictureBox2.Image = null;
+                    }));
+                }
+                else
+                {
+                    pictureBox2.Image = null;
+                }
+                return;
+            }
             await Task.Run(() =>
             {
                 using (Py.GIL())
                 {
-                    dlog($"started code former for : {GetInputImageWithIndex(index)} || {DateTime.Now.ToString("HH:mm:ss")}");
-                    dynamic cfClrModule = Py.Import("cf_clr");
-                    cfClrModule.run_codeformer(GetInputImageWithIndex(index), background_enhance, face_upsample, upscale, codeformer_fidelity);
+                    
+                    if (isCodeFormer)
+                    {
+                        dlog($"started Codeformer for : {GetInputImageWithIndex(index)} || {DateTime.Now.ToString("HH:mm:ss")}");
+                        dynamic cfClrModule = Py.Import("cf_clr");
+                        cfClrModule.run_codeformer(GetInputImageWithIndex(index), background_enhance, face_upsample, upscale, codeformer_fidelity);
+                    }
+                    else
+                    {
+                        dlog($"started GFPGAN for : {GetInputImageWithIndex(index)} || {DateTime.Now.ToString("HH:mm:ss")}");
+                        dynamic cfClrModule = Py.Import("gf");
+                        cfClrModule.restore_image(GetInputImageWithIndex(index));
+                    }
                     LoadEnhImage(GetInputImageWithIndex(index));
                     LoadOrgImage(GetInputImageWithIndex(index));
                     dlog($"Enhanced: {GetInputImageWithIndex(index)} || {DateTime.Now.ToString("HH:mm:ss")}");
@@ -140,32 +181,69 @@ namespace Codeformer_Dotnet
                     string[] imageFiles = Directory.GetFiles(inputImagePath, "*.*", SearchOption.AllDirectories)
                                     .Where(file => file.ToLower().EndsWith(".jpg") || file.ToLower().EndsWith(".png") || file.ToLower().EndsWith(".jpeg"))
                                     .ToArray();
-                    dlog($"started Codeformer for : {inputImagePath} || {DateTime.Now.ToString("HH:mm:ss")}");
-                    dynamic cfClrModule = Py.Import("cf_clr");
-                    foreach (var item in imageFiles)
+                    
+                    if (isCodeFormer)
                     {
-                        cfClrModule.run_codeformer(item, background_enhance, face_upsample, upscale, codeformer_fidelity);
-                        BeginInvoke(new Action(() =>
+                        dlog($"started Codeformer for : {inputImagePath} || {DateTime.Now.ToString("HH:mm:ss")}");
+                        dynamic cfClrModule = Py.Import("cf_clr");
+                        foreach (var item in imageFiles)
                         {
-                            LoadEnhImage(GetOutputImageWithIndex(trackBar1.Value));
-                            LoadOrgImage(GetOutputImageWithIndex(trackBar1.Value));
-                            dlog($"Enhanced: {GetInputImageWithIndex(trackBar1.Value)} || {DateTime.Now.ToString("HH:mm:ss")}");
-                        }));
-
-                        if (hardStop)
-                        {
-                            hardStop = false;
-                            isEnhanceAll = false;
-                            break;
-                        }
-                        BeginInvoke(new Action(() =>
-                        {
-                            if (trackBar1.Value < trackBar1.Maximum)
+                            //cfClrModule.run_codeformer(item, background_enhance, face_upsample, upscale, codeformer_fidelity);
+                            cfClrModule.restore_image(item);
+                            BeginInvoke(new Action(() =>
                             {
-                                trackBar1.Value++;
+                                LoadEnhImage(GetOutputImageWithIndex(trackBar1.Value));
+                                LoadOrgImage(GetOutputImageWithIndex(trackBar1.Value));
+                                dlog($"Enhanced: {GetInputImageWithIndex(trackBar1.Value)} || {DateTime.Now.ToString("HH:mm:ss")}");
+                            }));
+
+                            if (hardStop)
+                            {
+                                hardStop = false;
+                                isEnhanceAll = false;
+                                break;
                             }
-                        }));
+                            BeginInvoke(new Action(() =>
+                            {
+                                if (trackBar1.Value < trackBar1.Maximum)
+                                {
+                                    trackBar1.Value++;
+                                }
+                            }));
+                        }
                     }
+                    else
+                    {
+                        dlog($"started GFPGAN for : {inputImagePath} || {DateTime.Now.ToString("HH:mm:ss")}");
+                        dynamic cfClrModule = Py.Import("gf");
+                        foreach (var item in imageFiles)
+                        {
+                            //cfClrModule.run_codeformer(item, background_enhance, face_upsample, upscale, codeformer_fidelity);
+                            cfClrModule.restore_image(item);
+                            BeginInvoke(new Action(() =>
+                            {
+                                LoadEnhImage(GetOutputImageWithIndex(trackBar1.Value));
+                                LoadOrgImage(GetOutputImageWithIndex(trackBar1.Value));
+                                dlog($"Enhanced: {GetInputImageWithIndex(trackBar1.Value)} || {DateTime.Now.ToString("HH:mm:ss")}");
+                            }));
+
+                            if (hardStop)
+                            {
+                                hardStop = false;
+                                isEnhanceAll = false;
+                                break;
+                            }
+                            BeginInvoke(new Action(() =>
+                            {
+                                if (trackBar1.Value < trackBar1.Maximum)
+                                {
+                                    trackBar1.Value++;
+                                }
+                            }));
+                        }
+                    }
+                    
+                    
                     endTime = DateTime.Now;
                     BeginInvoke(new Action(() =>
                     {
@@ -276,7 +354,8 @@ namespace Codeformer_Dotnet
                 process.StartInfo.CreateNoWindow = true; // Prevent opening a new console window
 
 
-                //process.OutputDataReceived += (sender, e) => dlog(e.Data != null ? e.Data : "");
+                //process.OutputDataReceived += (sender, e) => {
+                //};
                 //process.ErrorDataReceived += (sender, e) => dlog(e.Data != null ? e.Data : "");
 
                 process.Start();
@@ -580,7 +659,7 @@ namespace Codeformer_Dotnet
                 {
                     enhanced = false;
                     button3.Text = "Show Enhanced";
-                    MessageBox.Show("Please use option 'Codeformer' to enhance this frame!", "Frame not found !");
+                    MessageBox.Show("Please use option 'Enhance' to enhance this frame!", "Frame not found !");
                 }
                 else
                 {
@@ -732,6 +811,20 @@ namespace Codeformer_Dotnet
             {
                 Maximize maximize = new Maximize(outFolderPath, fps, trackBar1.Value, frameCount);
                 maximize.Show();
+            }
+        }
+
+        private void comboBox1_SelectedValueChanged(object sender, EventArgs e)
+        {
+            if(comboBox1.SelectedIndex == 0)
+            {
+                isCodeFormer = false;
+                Text = $"Video Enhancer - GFPGAN";
+            }
+            else
+            {
+                isCodeFormer = true;
+                Text = $"Video Enhancer - Codeformer";
             }
         }
     }
